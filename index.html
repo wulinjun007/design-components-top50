@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>组件星图 CompAtlas · 设计模板与组件 GitHub Top 50 力量地图</title>
+<meta name="description" content="按 GitHub 实测 Star 排序的开源设计模板与组件 Top 50 力量地图：榜单、能力拆解、PRD 与组件工坊。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 8l-9-5-9 5 9 5 9-5z'/%3E%3Cpath d='M3 12l9 5 9-5'/%3E%3Cpath d='M3 16l9 5 9-5'/%3E%3C/svg%3E">
+<style>
+/* ============ Token 层：语义变量（模式来源 #2 shadcn/ui + #5 tailwindcss + #14 daisyui） ============ */
+:root{
+  --bg:#fafafa; --fg:#18181b; --card:#ffffff; --muted:#71717a; --border:#e4e4e7;
+  --primary:#4f46e5; --primary-fg:#ffffff; --ring:rgba(79,70,229,.28);
+  --r-s:8px; --r-m:12px; --r-l:18px;
+  --e0:0 1px 2px rgba(0,0,0,.05);
+  --e2:0 4px 12px rgba(0,0,0,.08);
+  --e8:0 16px 40px rgba(0,0,0,.14);
+  --hero-a:#4f46e5; --hero-b:#9333ea;
+  --code-bg:#f4f4f5;
+}
+html[data-theme="dark"]{
+  --bg:#0e0f13; --fg:#ececf1; --card:#16171d; --muted:#9b9ba7; --border:#26272f;
+  --primary:#818cf8; --primary-fg:#0e0f13; --ring:rgba(129,140,248,.3);
+  --e0:0 1px 2px rgba(0,0,0,.4);
+  --e2:0 4px 14px rgba(0,0,0,.45);
+  --e8:0 18px 44px rgba(0,0,0,.6);
+  --code-bg:#1c1d24;
+}
+/* 分类色（chip 与徽标共用） */
+.c-lib{--cat:#4f46e5} .c-motion{--cat:#d97706} .c-tpl{--cat:#059669} .c-icon{--cat:#0284c7}
+.c-css{--cat:#7c3aed} .c-headless{--cat:#e11d48} .c-chart{--cat:#0891b2} .c-email{--cat:#c026d3}
+html[data-theme="dark"] .c-lib{--cat:#818cf8} html[data-theme="dark"] .c-motion{--cat:#fbbf24}
+html[data-theme="dark"] .c-tpl{--cat:#34d399} html[data-theme="dark"] .c-icon{--cat:#38bdf8}
+html[data-theme="dark"] .c-css{--cat:#a78bfa} html[data-theme="dark"] .c-headless{--cat:#fb7185}
+html[data-theme="dark"] .c-chart{--cat:#22d3ee} html[data-theme="dark"] .c-email{--cat:#e879f9}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro SC","PingFang SC","Segoe UI","Microsoft YaHei",sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+a{color:var(--primary);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+svg{display:block;flex:none}
+.ic{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+html.js .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s cubic-bezier(.2,.7,.3,1),transform .5s cubic-bezier(.2,.7,.3,1)}
+html.js .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){html.js .reveal{opacity:1;transform:none;transition:none}}
+@media print{html.js .reveal{opacity:1!important;transform:none!important}}
+
+/* ============ 导航（布局思想：#13 AdminLTE 顶栏层级 / #15 tabler 排版） ============ */
+.nav{position:sticky;top:0;z-index:90;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-in{max-width:1120px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;gap:18px}
+.logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;color:var(--fg);white-space:nowrap}
+.logo:hover{text-decoration:none}
+.logo .ic{width:22px;height:22px;color:var(--primary)}
+.nav-links{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{flex:none;padding:7px 13px;border-radius:999px;color:var(--muted);font-size:14px;white-space:nowrap}
+.nav-links a:hover{color:var(--fg);background:color-mix(in srgb,var(--fg) 6%,transparent);text-decoration:none}
+.nav-links a.on{color:var(--primary);background:color-mix(in srgb,var(--primary) 10%,transparent);font-weight:600}
+.nav-act{display:flex;align-items:center;gap:8px;flex:none}
+.icon-btn{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:var(--r-s);color:var(--muted);border:1px solid var(--border);background:var(--card)}
+.icon-btn:hover{color:var(--fg);border-color:var(--muted)}
+.kbtn{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:var(--r-s);border:1px solid var(--border);background:var(--card);color:var(--muted);font-size:13px}
+.kbtn:hover{color:var(--fg);border-color:var(--muted)}
+.kbtn kbd{font-family:inherit;font-size:11px;border:1px solid var(--border);border-radius:5px;padding:1px 5px;background:var(--code-bg)}
+
+/* ============ 页面骨架 ============ */
+.page{display:none}
+.page.on{display:block;animation:pagein .28s cubic-bezier(.2,.7,.3,1)}
+@keyframes pagein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+main{min-height:calc(100vh - 200px)}
+
+/* ============ 首页 Hero ============ */
+.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(600px 300px at 18% 0%,color-mix(in srgb,var(--hero-a) 14%,transparent),transparent 70%),radial-gradient(500px 260px at 85% 10%,color-mix(in srgb,var(--hero-b) 12%,transparent),transparent 70%);pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;background-image:linear-gradient(color-mix(in srgb,var(--fg) 5%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--fg) 5%,transparent) 1px,transparent 1px);background-size:44px 44px;mask-image:radial-gradient(700px 340px at 50% 0%,#000 30%,transparent 75%);pointer-events:none}
+.hero-in{position:relative;padding:72px 0 56px;text-align:center}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);border:1px solid var(--border);background:var(--card);border-radius:999px;padding:5px 14px;margin-bottom:22px}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:#10b981}
+.hero h1{font-size:clamp(30px,5vw,46px);line-height:1.22;letter-spacing:-.02em;font-weight:800}
+.hero h1 .grad{background:linear-gradient(92deg,var(--hero-a),var(--hero-b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{max-width:640px;margin:18px auto 0;color:var(--muted);font-size:16px}
+.hero-cta{display:flex;gap:12px;justify-content:center;margin-top:30px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:46px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r-m);padding:18px 14px;box-shadow:var(--e0)}
+.stat b{display:block;font-size:26px;letter-spacing:-.02em}
+.stat span{font-size:12.5px;color:var(--muted)}
+.sec{padding:52px 0}
+.sec-head{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:22px}
+.sec-head h2{font-size:23px;letter-spacing:-.01em}
+.sec-head p{color:var(--muted);font-size:14px;margin-top:4px}
+.grid-cat{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.cat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-m);padding:16px;text-align:left;display:block;transition:box-shadow .2s,transform .2s;min-width:0}
+.cat-card:hover{box-shadow:var(--e2);transform:translateY(-2px);text-decoration:none}
+.cat-card .cc-top{display:flex;align-items:center;gap:9px;color:var(--cat)}
+.cat-card .cc-top b{color:var(--fg);font-size:14.5px}
+.cat-card .cc-n{margin-left:auto;font-size:12px;color:var(--muted)}
+.cat-card .cc-cap{font-size:13px;color:var(--fg);margin-top:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat-card .cc-stars{font-size:12px;color:var(--muted);margin-top:2px}
+.map-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.map-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-m);padding:18px;min-width:0}
+.map-card h3{font-size:15px;display:flex;align-items:center;gap:8px}
+.map-card h3 .ic{width:17px;height:17px;color:var(--primary)}
+.map-card p{font-size:13.5px;color:var(--muted);margin-top:8px}
+.src-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.src-tag{font-size:11.5px;color:var(--cat);background:color-mix(in srgb,var(--cat) 12%,transparent);border-radius:999px;padding:2.5px 9px;white-space:nowrap}
+.note-band{border:1px dashed var(--border);border-radius:var(--r-m);padding:16px 18px;font-size:13.5px;color:var(--muted);background:color-mix(in srgb,var(--card) 60%,transparent)}
+.note-band b{color:var(--fg)}
+
+/* ============ 按钮（模式来源 #1 Bootstrap 变体 API × #2 shadcn/ui） ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:40px;padding:0 18px;border-radius:10px;font-size:14px;font-weight:600;border:1px solid transparent;transition:transform .15s,box-shadow .2s,background .2s;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn-p{background:var(--primary);color:var(--primary-fg)}
+.btn-p:hover{box-shadow:0 6px 18px var(--ring);text-decoration:none}
+.btn-s{background:color-mix(in srgb,var(--fg) 7%,transparent);color:var(--fg)}
+.btn-s:hover{background:color-mix(in srgb,var(--fg) 11%,transparent);text-decoration:none}
+.btn-o{border-color:var(--border);background:var(--card);color:var(--fg)}
+.btn-o:hover{border-color:var(--muted);text-decoration:none}
+.btn-g{color:var(--fg)}
+.btn-g:hover{background:color-mix(in srgb,var(--fg) 6%,transparent);text-decoration:none}
+.btn-d{background:#dc2626;color:#fff}
+.btn-d:hover{background:#b91c1c;text-decoration:none}
+.btn.sm{height:32px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn.lg{height:46px;padding:0 24px;font-size:15px;border-radius:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ============ 榜单页 ============ */
+.page-head{padding:40px 0 6px}
+.page-head h1{font-size:28px;letter-spacing:-.01em}
+.page-head .ph-sub{color:var(--muted);font-size:14px;margin-top:8px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:20px 0 14px}
+.search-box{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border:1px solid var(--border);border-radius:10px;background:var(--card);flex:1;min-width:200px;max-width:340px}
+.search-box input{border:0;outline:0;background:none;color:var(--fg);font:inherit;font-size:14px;width:100%;min-width:0}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:999px;border:1px solid var(--border);background:var(--card);font-size:13px;color:var(--muted);white-space:nowrap}
+.chip .cnt{font-size:11px;background:color-mix(in srgb,var(--fg) 8%,transparent);border-radius:999px;padding:0 6px}
+.chip:hover{border-color:var(--muted);color:var(--fg)}
+.chip.on{background:var(--cat,var(--fg));border-color:transparent;color:#fff;font-weight:600}
+html[data-theme="dark"] .chip.on{color:#0e0f13}
+.sel{height:38px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--fg);font:inherit;font-size:13.5px;padding:0 10px}
+.tbl-meta{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12.5px;margin:10px 2px}
+.tbl-scroll{overflow-x:auto;border:1px solid var(--border);border-radius:var(--r-m);background:var(--card)}
+table.tbl{width:100%;border-collapse:collapse;font-size:13.5px;min-width:760px}
+.tbl th{position:sticky;top:0;background:var(--code-bg);color:var(--muted);font-weight:600;text-align:left;padding:10px 14px;font-size:12px;border-bottom:1px solid var(--border);white-space:nowrap;z-index:1}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;min-width:0}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tbody tr{cursor:pointer;transition:background .12s}
+.tbl tbody tr:hover{background:color-mix(in srgb,var(--primary) 5%,transparent)}
+.rk{font-family:ui-monospace,Menlo,monospace;color:var(--muted);font-size:12.5px;width:44px}
+.pj-cell b{font-size:14px}
+.pj-cell .repo{display:block;font-size:11.5px;color:var(--muted);font-family:ui-monospace,Menlo,monospace;margin-top:1px}
+.stars-cell{font-family:ui-monospace,Menlo,monospace;font-weight:700;white-space:nowrap}
+.stars-cell .ic{display:inline-block;width:12px;height:12px;color:#f59e0b;vertical-align:-1px}
+.lic-cell{white-space:nowrap;font-size:12px;color:var(--muted)}
+.lic-cell.warn{color:#d97706}
+.cap-cell{color:var(--muted);font-size:12.5px;max-width:340px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--cat);background:color-mix(in srgb,var(--cat) 12%,transparent);border-radius:999px;padding:2.5px 9px;white-space:nowrap;font-weight:600}
+.empty{padding:48px 20px;text-align:center;color:var(--muted)}
+
+/* ============ 抽屉（模式来源：#47 radix Dialog 行为） ============ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;opacity:0;transition:opacity .2s}
+.overlay.open{opacity:1}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,94vw);background:var(--card);border-left:1px solid var(--border);z-index:101;transform:translateX(102%);transition:transform .26s cubic-bezier(.2,.7,.3,1);display:flex;flex-direction:column;box-shadow:var(--e8)}
+.drawer.open{transform:none}
+.dw-head{display:flex;align-items:flex-start;gap:12px;padding:20px 20px 14px;border-bottom:1px solid var(--border)}
+.dw-head h3{font-size:19px;letter-spacing:-.01em}
+.dw-head .repo{font-size:12px;color:var(--muted);font-family:ui-monospace,Menlo,monospace;margin-top:2px}
+.dw-close{margin-left:auto}
+.dw-body{padding:18px 20px 26px;overflow-y:auto;flex:1}
+.dw-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+.dw-stars{display:inline-flex;align-items:center;gap:6px;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:15px;background:color-mix(in srgb,var(--fg) 6%,transparent);padding:5px 12px;border-radius:9px}
+.dw-stars .ic{width:13px;height:13px;color:#f59e0b}
+.dw-sec{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 8px;font-weight:700}
+.dw-desc{font-size:14px}
+.dw-caps{list-style:none}
+.dw-caps li{position:relative;padding:7px 0 7px 22px;font-size:13.5px;border-bottom:1px dashed var(--border)}
+.dw-caps li:last-child{border-bottom:0}
+.dw-caps li::before{content:"";position:absolute;left:2px;top:14px;width:8px;height:8px;border-radius:2px;background:var(--primary);opacity:.75}
+.dw-risk{border:1px solid color-mix(in srgb,#d97706 40%,transparent);background:color-mix(in srgb,#d97706 8%,transparent);color:var(--fg);border-radius:var(--r-s);padding:10px 12px;font-size:13px;margin-top:14px}
+.dw-risk b{color:#d97706}
+.dw-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+
+/* ============ 命令面板（模式来源 #47 radix × #2 shadcn Command） ============ */
+.palette-wrap{position:fixed;inset:0;z-index:120;display:none;align-items:flex-start;justify-content:center;padding:12vh 16px 0}
+.palette-wrap.open{display:flex}
+.pal-overlay{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.palette{position:relative;width:min(580px,100%);background:var(--card);border:1px solid var(--border);border-radius:var(--r-l);box-shadow:var(--e8);overflow:hidden;animation:palin .18s cubic-bezier(.2,.7,.3,1)}
+@keyframes palin{from{opacity:0;transform:scale(.98) translateY(-6px)}to{opacity:1;transform:none}}
+.pal-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.pal-in input{flex:1;border:0;outline:0;background:none;color:var(--fg);font:inherit;font-size:15px;min-width:0}
+.pal-list{max-height:340px;overflow-y:auto;padding:8px}
+.pal-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 12px;border-radius:9px;font-size:14px;color:var(--fg)}
+.pal-item .pi-sub{color:var(--muted);font-size:12px;margin-left:auto;font-family:ui-monospace,Menlo,monospace;white-space:nowrap}
+.pal-item.sel{background:color-mix(in srgb,var(--primary) 10%,transparent)}
+.pal-item .ic{width:15px;height:15px;color:var(--muted)}
+.pal-group{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px 4px;font-weight:700}
+.pal-foot{display:flex;gap:14px;padding:9px 16px;border-top:1px solid var(--border);color:var(--muted);font-size:11.5px}
+.pal-foot kbd{font-family:inherit;border:1px solid var(--border);border-radius:4px;padding:0 5px;background:var(--code-bg)}
+
+/* ============ Toast（反馈层思路：#24 HeroUI） ============ */
+.toasts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:8px;background:var(--fg);color:var(--bg);font-size:13.5px;font-weight:600;border-radius:999px;padding:9px 18px;box-shadow:var(--e2);animation:toastin .25s cubic-bezier(.2,.7,.3,1)}
+@keyframes toastin{from{opacity:0;transform:translateY(-12px) scale(.96)}to{opacity:1;transform:none}}
+.toast.out{opacity:0;transform:translateY(-8px);transition:all .25s}
+
+/* ============ PRD 页 ============ */
+.prd-layout{display:grid;grid-template-columns:216px 1fr;gap:36px;padding-top:36px}
+.prd-toc{position:sticky;top:84px;align-self:start;font-size:13px;max-height:calc(100vh - 110px);overflow-y:auto}
+.prd-toc a{display:block;color:var(--muted);padding:5px 10px;border-left:2px solid var(--border);border-radius:0}
+.prd-toc a:hover{color:var(--fg);text-decoration:none}
+.prd-toc a.l2{padding-left:22px;font-size:12.5px}
+.prd{max-width:760px;min-width:0;padding-bottom:60px;overflow-wrap:anywhere}
+.prd h1{font-size:26px;letter-spacing:-.01em;margin-bottom:6px}
+.prd .prd-meta{color:var(--muted);font-size:13px;margin-bottom:22px}
+.prd h2{font-size:20px;margin:34px 0 12px;padding-top:18px;border-top:1px solid var(--border);scroll-margin-top:84px}
+.prd h3{font-size:15.5px;margin:22px 0 8px;scroll-margin-top:84px}
+.prd p,.prd li{font-size:14px;color:color-mix(in srgb,var(--fg) 88%,var(--muted))}
+.prd p{margin:8px 0}
+.prd ul,.prd ol{padding-left:22px;margin:8px 0}
+.prd code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;background:var(--code-bg);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.prd pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--r-s);padding:14px;overflow-x:auto;margin:10px 0}
+.prd pre code{border:0;background:none;padding:0;font-size:12.5px;line-height:1.6}
+.prd blockquote{border-left:3px solid var(--primary);background:color-mix(in srgb,var(--primary) 6%,transparent);border-radius:0 var(--r-s) var(--r-s) 0;padding:10px 14px;margin:12px 0;font-size:13.5px;color:var(--muted)}
+.tbl-p{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0;border:1px solid var(--border);border-radius:var(--r-s);overflow:hidden}
+.tbl-p th{background:var(--code-bg);text-align:left;padding:8px 12px;font-size:12px;color:var(--muted)}
+.tbl-p td{padding:8px 12px;border-top:1px solid var(--border);vertical-align:top;min-width:0}
+.tagp0{color:#059669;font-weight:700}.tagp1{color:#d97706;font-weight:700}.tagp2{color:var(--muted);font-weight:700}
+
+/* ============ 组件工坊 ============ */
+.lab-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding-bottom:60px}
+.lab-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-m);overflow:hidden;min-width:0}
+.lab-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.lab-head b{font-size:14.5px}
+.lab-src{margin-left:auto;font-size:11px;color:var(--cat);background:color-mix(in srgb,var(--cat) 12%,transparent);border-radius:999px;padding:3px 10px;white-space:nowrap;font-weight:600}
+.lab-demo{padding:20px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lab-demo.col{flex-direction:column;align-items:stretch}
+.lab-note{padding:0 16px 14px;font-size:12px;color:var(--muted)}
+/* MUI elevation 卡片 */
+.ele-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+.ele-card{background:var(--bg);border-radius:var(--r-m);padding:16px 12px;text-align:center;font-size:12px;color:var(--muted);transition:transform .2s,box-shadow .2s}
+.ele-card b{display:block;font-size:13px;color:var(--fg);margin-bottom:3px}
+.ele-card:hover{transform:translateY(-3px)}
+.ele0{box-shadow:none;border:1px solid var(--border)}
+.ele2{box-shadow:var(--e2)}
+.ele8{box-shadow:var(--e8)}
+/* tabler 统计卡 */
+.stat-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+.statc{border:1px solid var(--border);border-radius:var(--r-m);padding:13px 14px;background:var(--bg)}
+.statc .lab{font-size:12px;color:var(--muted)}
+.statc .val{font-size:22px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.statc .trend{font-size:11.5px;margin-top:2px}
+.trend.up{color:#059669}.trend.down{color:#dc2626}
+/* Ant 表格 */
+table.mini{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--bg);border-radius:var(--r-s);overflow:hidden}
+table.mini th{background:var(--code-bg);text-align:left;padding:7px 12px;font-size:11.5px;color:var(--muted)}
+table.mini td{padding:6.5px 12px;border-top:1px solid var(--border)}
+table.mini tbody tr:hover{background:color-mix(in srgb,var(--primary) 5%,transparent)}
+/* Tabs（vuetify 指示器） */
+.tabs-demo{width:100%}
+.tabs-bar{position:relative;display:flex;gap:4px;border-bottom:1px solid var(--border)}
+.tabs-bar .tbtn{padding:9px 16px;font-size:13.5px;color:var(--muted);font-weight:600}
+.tabs-bar .tbtn.on{color:var(--primary)}
+.tab-ind{position:absolute;bottom:-1px;height:2.5px;background:var(--primary);border-radius:2px;transition:left .25s cubic-bezier(.2,.7,.3,1),width .25s cubic-bezier(.2,.7,.3,1)}
+.tab-panel{padding:14px 4px;font-size:13.5px;color:var(--muted)}
+/* 图标组 */
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;width:100%}
+.icon-cell{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border:1px solid var(--border);border-radius:var(--r-s);font-size:10.5px;color:var(--muted)}
+.icon-cell .ic{width:20px;height:20px;color:var(--fg)}
+/* 滚动进场样张 */
+.sr-set{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%}
+.sr-box{border:1px dashed var(--border);border-radius:var(--r-m);padding:22px 10px;text-align:center;font-size:12px;color:var(--muted)}
+
+/* ============ 方法论页 ============ */
+.method{max-width:820px;padding:40px 0 60px;overflow-wrap:anywhere}
+.method h1{font-size:26px;margin-bottom:8px}
+.method h2{font-size:18px;margin:30px 0 10px;scroll-margin-top:84px}
+.method p,.method li{font-size:14px;color:color-mix(in srgb,var(--fg) 88%,var(--muted))}
+.method ul,.method ol{padding-left:22px;margin:8px 0}
+.method pre{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--r-s);padding:14px;overflow-x:auto;font-size:12.5px;line-height:1.6;margin:10px 0}
+.method code{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+
+footer{border-top:1px solid var(--border);padding:28px 0 40px;color:var(--muted);font-size:13px}
+.foot-in{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;justify-content:space-between}
+.foot-in a{color:var(--muted)}
+.foot-in a:hover{color:var(--fg)}
+
+/* ============ 响应式 ============ */
+@media (max-width:960px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .grid-cat{grid-template-columns:repeat(2,1fr)}
+  .map-grid{grid-template-columns:repeat(2,1fr)}
+  .prd-layout{grid-template-columns:1fr}
+  .prd-toc{position:static;max-height:none;display:flex;flex-wrap:wrap;gap:2px}
+  .prd-toc a{border-left:0;border:1px solid var(--border);border-radius:999px;padding:4px 12px}
+  .lab-grid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .nav-in{padding:0 14px;gap:10px}
+  .wrap{padding:0 14px}
+  .kbtn span{display:none}
+  .kbtn{padding:0 10px}
+  .map-grid,.ele-cards,.stat-cards,.sr-set{grid-template-columns:1fr 1fr}
+  .icon-grid{grid-template-columns:repeat(4,1fr)}
+  .hero-in{padding:52px 0 40px}
+  /* 表格 → 卡片降级 */
+  .tbl-scroll{border:0;background:none;overflow:visible}
+  table.tbl{min-width:0;display:block}
+  .tbl thead{display:none}
+  .tbl tbody{display:block}
+  .tbl tbody tr{display:block;border:1px solid var(--border);border-radius:var(--r-m);background:var(--card);margin-bottom:10px;padding:6px 2px}
+  .tbl td{display:flex;justify-content:space-between;align-items:baseline;gap:14px;border:0;padding:5px 12px}
+  .tbl td::before{content:attr(data-l);flex:none;color:var(--muted);font-size:11.5px}
+  .tbl td.rk-cell::before{content:"#"}
+  .cap-cell{display:block;-webkit-line-clamp:unset;max-width:none}
+  .cap-cell::before{content:attr(data-l);display:block;color:var(--muted);font-size:11.5px;margin-bottom:2px}
+  .cap-cell{color:var(--muted)}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 导航 ================= -->
+<header class="nav">
+  <div class="nav-in">
+    <a class="logo" href="#/">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></svg>
+      组件星图
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="主导航">
+      <a href="#/" data-nav="home">首页</a>
+      <a href="#/list" data-nav="list">Top 50 榜单</a>
+      <a href="#/prd" data-nav="prd">PRD</a>
+      <a href="#/lab" data-nav="lab">组件工坊</a>
+      <a href="#/method" data-nav="method">方法论</a>
+    </nav>
+    <div class="nav-act">
+      <button class="kbtn" id="openPal" aria-label="打开命令面板">
+        <svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <span>搜索</span><kbd>⌘K</kbd>
+      </button>
+      <button class="icon-btn" id="themeBtn" aria-label="切换主题">
+        <svg class="ic" id="themeIcon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      </button>
+      <a class="icon-btn" id="ghBtn" href="https://github.com/twbs/bootstrap" target="_blank" rel="noopener" aria-label="GitHub" title="去 GitHub 看榜首项目">
+        <svg class="ic" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.55A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5z"/></svg>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- ================= 首页 ================= -->
+<section class="page" id="page-home">
+  <div class="hero"><div class="wrap hero-in">
+    <span class="eyebrow"><span class="dot"></span>GitHub API 实测 · 快照 2026-10-06/07 · 非「awesome」转发</span>
+    <h1>设计模板与组件<br><span class="grad">GitHub Top 50 力量地图</span></h1>
+    <p class="sub">50 个开源项目、约 214 万 Star。这里不止排名：每个项目拆出「可借鉴能力」，本站整站示范这些能力的真实调用。</p>
+    <div class="hero-cta">
+      <a class="btn btn-p lg" href="#/list">查看完整榜单
+        <svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px"><path d="M7 17L17 7M7 7h10v10"/></svg></a>
+      <a class="btn btn-o lg" href="#/prd">读 PRD（能力调用映射）</a>
+    </div>
+    <div class="stats" id="heroStats"></div>
+  </div></div>
+
+  <div class="wrap sec">
+    <div class="sec-head">
+      <div><h2>八大类导览</h2><p>按分类快速进入赛道，卡片显示该类榜首项目</p></div>
+      <a class="btn btn-o sm" href="#/list">全部 50 项</a>
+    </div>
+    <div class="grid-cat" id="catCards"></div>
+  </div>
+
+  <div class="wrap sec" style="padding-top:8px">
+    <div class="sec-head">
+      <div><h2>能力调用地图</h2><p>本站如何「调用」这 50 个项目——每项设计决策标注来源</p></div>
+      <a class="btn btn-o sm" href="#/prd">PRD §6 完整映射</a>
+    </div>
+    <div class="map-grid" id="mapGrid"></div>
+  </div>
+
+  <div class="wrap sec" style="padding-top:0">
+    <div class="note-band">
+      <b>与《设计系统 TOP50》的关系：</b>2026-10-02 交付的榜单覆盖<b>设计规范/系统层</b>（含 Apple HIG 等不开源规范）；本站是它的姊妹篇，聚焦<b>可安装、可复制源码的组件库与模板层</b>，两榜在头部组件库上自然重叠约 15–20 项。口径、排除记录与复现命令见 <a href="#/method">方法论</a>。
+    </div>
+  </div>
+</section>
+
+<!-- ================= 榜单 ================= -->
+<section class="page" id="page-list">
+  <div class="wrap">
+    <div class="page-head">
+      <h1>Top 50 榜单</h1>
+      <p class="ph-sub">GitHub API 实测 Star（快照 2026-10-06/07）· 合计 <b id="totalStars" class="mono"></b> · 已核验归档与许可状态 · 点击行看能力拆解</p>
+    </div>
+    <div class="toolbar">
+      <div class="search-box">
+        <svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="q" type="search" placeholder="搜索名称 / 能力，如：后台、图标、无头" aria-label="搜索项目">
+      </div>
+      <div class="chips" id="chips" role="tablist" aria-label="分类筛选"></div>
+      <select class="sel" id="sortSel" aria-label="排序">
+        <option value="stars">按 Star 降序</option>
+        <option value="name">按名称 A–Z</option>
+      </select>
+    </div>
+    <div class="tbl-meta"><span id="cnt"></span><span>规则：非 archived 公开仓库 · Star 降序截前 50 · 遗珠与排除记录见方法论页</span></div>
+    <div class="tbl-scroll">
+      <table class="tbl" aria-label="Top 50 榜单">
+        <thead><tr><th>#</th><th>项目</th><th>分类</th><th>Star</th><th>许可</th><th>可借鉴能力</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="empty" hidden>没有匹配的项目，试试更短的关键词。</div>
+  </div>
+</section>
+
+<!-- ================= PRD ================= -->
+<section class="page" id="page-prd">
+  <div class="wrap prd-layout">
+    <nav class="prd-toc" id="prdToc" aria-label="PRD 目录"></nav>
+    <article class="prd" id="prdBody"></article>
+  </div>
+</section>
+
+<!-- ================= 组件工坊 ================= -->
+<section class="page" id="page-lab">
+  <div class="wrap">
+    <div class="page-head">
+      <h1>组件工坊</h1>
+      <p class="ph-sub">10 组组件实物——每组标注「模式来源」，证明 Top 50 的能力被真实调用，而非口头引用。全部为零依赖手写实现。</p>
+    </div>
+    <div class="lab-grid" id="labGrid"></div>
+  </div>
+</section>
+
+<!-- ================= 方法论 ================= -->
+<section class="page" id="page-method">
+  <div class="wrap method">
+    <h1>方法论</h1>
+    <p style="color:var(--muted)">榜单怎么来、怎么排除、怎么复现——口径全部透明。</p>
+
+    <h2>1 · 入选口径</h2>
+    <ul>
+      <li>公开 GitHub 仓库，核心产出为 <b>UI 组件库 / 界面模板 / 设计基建</b>（CSS 底座、图标、动效、图表、邮件组件）。</li>
+      <li>非 archived（pico.css 16.9k、shoelace 13.8k 因归档被排除）。</li>
+      <li>按 Star 降序取前 50；51–60 名列入「遗珠名单」。</li>
+      <li>框架类项目（如 Next.js、Vite）不入榜——它们不是设计资产。</li>
+    </ul>
+
+    <h2>2 · 数据采集</h2>
+    <ul>
+      <li>gh CLI GraphQL 批量查询（76 个候选一次往返），REST 补测修正路径。</li>
+      <li>字段：stargazerCount / isArchived / licenseInfo.spdxId / pushedAt。</li>
+      <li>快照时间：<b>2026-10-06/07</b>；许可以仓库 SPDX 标注为准，NOASSERTION 者核对项目声明并标注。</li>
+    </ul>
+
+    <h2>3 · 排除与勘误记录</h2>
+    <div class="tbl-scroll" style="border:1px solid var(--border);border-radius:var(--r-m)">
+      <table class="tbl-p" style="margin:0;border:0">
+        <thead><tr><th>事项</th><th>结论</th></tr></thead>
+        <tbody>
+          <tr><td>picocss/pico（16,861★）</td><td>已 archived，排除</td></tr>
+          <tr><td>shoelace-style/shoelace（13,832★）</td><td>已 archived（后继 Web Awesome），排除</td></tr>
+          <tr><td>getbootstrap/bootstrap</td><td>404；正本在 <b>twbs/bootstrap</b></td></tr>
+          <tr><td>blueprintjs/blueprint</td><td>404；正本在 <b>palantir/blueprint</b>（22,126★）</td></tr>
+          <tr><td>gsap/gsap</td><td>404；正本在 <b>GreenSock/GSAP</b>（28,844★）</td></tr>
+          <tr><td>preline</td><td>两处候选路径均 404 且搜索限额，未计入榜单</td></tr>
+          <tr><td>REST 限额</td><td>搜索 API 403 后切换 GraphQL（余量 5,000），未影响数据完整性</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>4 · 风险标注（站内可见原则）</h2>
+    <ul>
+      <li><b>animate.css</b>（#7，82.9k）：Hippocratic 2.1 道德许可，非标准 OSI 开源，商用过法务；本站只借鉴「动效词表」思想。</li>
+      <li><b>scrollreveal</b>（#40，22.5k）：仓库无 LICENSE 文件＝默认版权保留；本站不使用。</li>
+      <li><b>GSAP</b>（#27，28.8k）：Webflow 所有、标准许可需注册；借鉴时间轴思想不引代码。</li>
+      <li><b>foundation/yeti</b>（#25，29.8k）：已更名低维护，保留为历史参考位。</li>
+    </ul>
+
+    <h2>5 · 复现命令</h2>
+    <pre class="mono"># 批量实测（GraphQL 单次往返，别名数=仓库数）
+gh api graphql -f query='{ r0: repository(owner:"twbs",name:"bootstrap"){stargazerCount isArchived licenseInfo{spdxId}} ... }'
+# 单仓补测
+gh api repos/twbs/bootstrap --jq '.stargazers_count'</pre>
+
+    <h2>6 · 局限性</h2>
+    <ul>
+      <li>Star ≠ 质量：人气受生态位、先发、营销影响；榜单用于「看清地图」，选型仍需结合场景。</li>
+      <li>快照制：数字为 2026-10-06/07 时点值，不实时刷新（换取零依赖、可离线）。</li>
+      <li>「能力拆解」为编辑判断，欢迎按仓库文档复核。</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="foot-in">
+    <span>组件星图 CompAtlas · 数据快照 2026-10-06/07 · 零依赖单文件静态站</span>
+    <span><a href="#/list">榜单</a> · <a href="#/prd">PRD</a> · <a href="#/lab">工坊</a> · <a href="#/method">方法论</a></span>
+  </div>
+</footer>
+
+<!-- 抽屉 -->
+<div class="overlay" id="overlay" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="项目详情" hidden>
+  <div class="dw-head">
+    <div style="min-width:0">
+      <h3 id="dwName"></h3>
+      <div class="repo" id="dwRepo"></div>
+    </div>
+    <button class="icon-btn dw-close" id="dwClose" aria-label="关闭">
+      <svg class="ic" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="dw-body" id="dwBody"></div>
+</aside>
+
+<!-- 命令面板 -->
+<div class="palette-wrap" id="palWrap" role="dialog" aria-modal="true" aria-label="命令面板">
+  <div class="pal-overlay" id="palOverlay"></div>
+  <div class="palette">
+    <div class="pal-in">
+      <svg class="ic" viewBox="0 0 24 24" style="width:16px;height:16px;color:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="palInput" placeholder="搜索 50 个项目，或跳转页面…" aria-label="命令面板输入">
+      <button class="icon-btn" id="palClose" aria-label="关闭" style="width:30px;height:30px;border:0">
+        <svg class="ic" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="pal-list" id="palList" role="listbox"></div>
+    <div class="pal-foot"><span><kbd>↑↓</kbd> 选择</span><span><kbd>↵</kbd> 打开</span><span><kbd>esc</kbd> 关闭</span></div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+document.documentElement.classList.add("js");
+
+/* ==================== 数据（与《TOP50-榜单.md》逐条一致） ==================== */
+const CATS={
+  lib:{label:"组件库"},motion:{label:"动效"},tpl:{label:"模板后台"},icon:{label:"图标"},
+  css:{label:"CSS 底座"},headless:{label:"无头组件"},chart:{label:"图表"},email:{label:"邮件组件"}
+};
+const P=[
+{r:1,n:"Bootstrap",o:"twbs",repo:"bootstrap",s:174987,c:"lib",lic:"MIT",doc:"https://getbootstrap.com",cap:"12 列栅格 + 响应式工具类鼻祖；.btn 语义变体是组件 API 设计范本",d:"CSS 组件库与栅格体系的奠基者，几乎定义了「框架类 UI 库」的产品形态。",caps:["12 列栅格 + 断点工具类，响应式布局的行业默认语法",".btn/.card/.modal 语义变体 API：一套 class 表达意图与状态","Reboot 样式重置，统一跨浏览器基线"]},
+{r:2,n:"shadcn/ui",o:"shadcn-ui",repo:"ui",s:125209,c:"lib",lic:"MIT",doc:"https://ui.shadcn.com",cap:"「源码分发」：组件代码拷进项目而非装依赖；CSS 变量语义 Token + CVA 变体工程",d:"不发布 npm 包、而是把组件源码交付到你仓库的 Anthropic 系明星项目，重新定义了组件库的分发方式。",caps:["语义 Token：--primary/--muted/--ring，暗色主题只换变量值","CVA（class-variance-authority）变体工程：意图×尺寸正交组合","基于 Radix 无头组件，行为与样式彻底分离"]},
+{r:3,n:"Ant Design",o:"ant-design",repo:"ant-design",s:99693,c:"lib",lic:"MIT",doc:"https://ant.design",cap:"企业级 B 端设计价值观；表格/表单/弹窗密度规范；四层主题 Token 映射",d:"蚂蚁出品、全球最流行的企业级 React 组件体系，中文 B 端设计的事实标准。",caps:["「自然/确定/意义/生长」设计价值观文档化","Table/Form/Modal 密度与分区规范，B 端表单即流程","Seed→Map→Alias→Component 四层令牌映射"]},
+{r:4,n:"Material UI",o:"mui",repo:"material-ui",s:99134,c:"lib",lic:"MIT",doc:"https://mui.com",cap:"Material elevation 阴影体系与动效曲线；无障碍开箱即用",d:"Material Design 的 React 全量实现，MUI 生态（Base UI/Toolpad）的母体。",caps:["elevation 0–24 阴影层级体系（本站取 0/2/8 三档）","Material 动效曲线与涟漪反馈","WAI-ARIA 全覆盖，键盘可达开箱即用"]},
+{r:5,n:"Tailwind CSS",o:"tailwindlabs",repo:"tailwindcss",s:97783,c:"css",lic:"MIT",doc:"https://tailwindcss.com",cap:"原子类=设计令牌落地层；间距/字号刻度约束；暗色模式策略",d:"原子化 CSS 引擎，把设计系统约束直接编码进工具类名。",caps:["4px 基距 + 有限字号刻度，从机制上防「随手写 17px」","工具类即令牌落地层，样式与结构同处可见","dark: 变体的主题切换策略"]},
+{r:6,n:"vue-element-admin",o:"PanJiaChen",repo:"vue-element-admin",s:90161,c:"tpl",lic:"MIT",doc:"https://panjiachen.github.io/vue-element-admin-site",cap:"中后台信息架构范本（侧边导航+权限路由+仪表盘），中文后台模板顶流",d:"国内流传最广的 Vue 中后台模板，一代人的后台开发启蒙。",caps:["侧边导航+顶栏+TagView 的中后台 IA 范式","动态权限路由（菜单即权限）的通用实现","Dashboard 列表页/详情页/表单页的标准分型"]},
+{r:7,n:"Animate.css",o:"animate-css",repo:"animate.css",s:82853,c:"motion",lic:"⚠️ Hippocratic 2.1",risk:"Hippocratic 2.1 为道德许可（非标准 OSI 开源），商用前过法务。本站只借鉴其「动效词表」思想，不引入代码。",doc:"https://animate.style",cap:"进出场动效词表（fade/slide/zoom × 方向），用 class 约束动效防滥用",d:"最广为人知的 CSS 动效库，价值不在代码而在「把动效收敛成词表」的思路。",caps:["fade/slide/zoom/bounce × 方向的动效词表命名法","用 class 约束动效：可枚举、可审查、防炫技","进出场分离（In/Out 后缀）的心智模型"]},
+{r:8,n:"Chart.js",o:"chartjs",repo:"Chart.js",s:67733,c:"chart",lic:"MIT",doc:"https://www.chartjs.org",cap:"轻量图表默认美学；「配置即图表」API 设计；响应式 canvas",d:"最流行的开源图表库，以默认就好看著称。",caps:["8 种基础图表的默认美学打磨（数据墨水比）","config 对象驱动的声明式 API 设计","响应式 canvas 与设备像素比适配"]},
+{r:9,n:"Apache ECharts",o:"apache",repo:"echarts",s:67457,c:"chart",lic:"Apache-2.0",doc:"https://echarts.apache.org",cap:"大数据量渲染双引擎；系列/坐标系/组件三层可视化模型",d:"Apache 顶级项目、国产可视化标杆，从百度孵化。",caps:["Canvas/SVG 双渲染引擎，百万级数据渐进渲染","系列-坐标系-组件三层模型，可视化语法教科书","主题系统与可视化配色规范"]},
+{r:10,n:"Element",o:"ElemeFE",repo:"element",s:54031,c:"lib",lic:"MIT",doc:"https://element.eleme.io",cap:"中文 B 端组件库启蒙；「文档即产品」范式",d:"饿了么出品的 Vue 2 组件库，中文 B 端组件生态的开创者（Element Plus 为其 Vue 3 续作）。",caps:["「文档即产品」：每个组件可交互演示+完整 API 表","表单校验/消息反馈/弹层管理的完整闭环","中文场景下表单与表格的密度实践"]},
+{r:11,n:"Ionic Framework",o:"ionic-team",repo:"ionic-framework",s:52686,c:"lib",lic:"MIT",doc:"https://ionicframework.com",cap:"跨端自适应组件（iOS/MD 双主题）；移动手势交互",d:"Web 技术做跨端 App 的组件框架，一套代码自适应两套平台语言。",caps:["同一组件按平台输出 iOS/MD 双主题","手势系统：列表滑动/下拉刷新/模态转场","移动端路由与页面栈转场模型"]},
+{r:12,n:"Bulma",o:"jgthms",repo:"bulma",s:50052,c:"css",lic:"MIT",doc:"https://bulma.io",cap:"无 JS 纯 CSS 组件范式；is-* modifiers 语法",d:"零 JavaScript 的纯 CSS 框架，API 设计优雅的教科书。",caps:["modifiers 语法：is-*/has-* 前缀表达状态与修饰","纯 CSS 组件：行为与样式天然分离","列式栅格（columns/col）的极简实现"]},
+{r:13,n:"AdminLTE",o:"ColorlibHQ",repo:"AdminLTE",s:45638,c:"tpl",lic:"MIT",doc:"https://adminlte.io",cap:"经典管理台布局（顶栏+侧栏+卡片栅格）；开箱页面模板集",d:"基于 Bootstrap 的传奇后台模板，十年长青的开源管理台起点。",caps:["顶栏+侧栏+内容三段式管理台布局原语","卡片栅格仪表盘的排列范式","登录页/注册页/404 等全套页面模板"]},
+{r:14,n:"daisyUI",o:"saadeghi",repo:"daisyui",s:42549,c:"lib",lic:"MIT",doc:"https://daisyui.com",cap:"Tailwind 之上的语义组件类；30+ 主题切换的令牌方案",d:"把 Tailwind 原子类收敛为语义组件类的最受欢迎方案。",caps:["语义 class（btn/card/tabs）覆盖原子类的组合成本","CSS 变量驱动的 30+ 主题系统，一行切换","无 JS、框架无关的组件样式层"]},
+{r:15,n:"Tabler",o:"tabler",repo:"tabler",s:41821,c:"tpl",lic:"MIT",doc:"https://tabler.io",cap:"设计质量最高的开源后台之一；卡片化仪表盘 + 精致排版",d:"公认审美在线的免费开源管理台模板，设计驱动后台模板的代表。",caps:["卡片化仪表盘排版与留白节奏（本站统计卡借鉴）","统计卡「数值大字+趋势色」的信息层级","与 Tabler Icons 同一设计语言的自洽体系"]},
+{r:16,n:"Vuetify",o:"vuetifyjs",repo:"vuetify",s:41037,c:"lib",lic:"MIT（仓库 SPDX 为 NOASSERTION）",doc:"https://vuetifyjs.com",cap:"Material Design 全量实现；网格系统与断点策略",d:"Vue 生态 Material Design 全量实现，组件数与文档完备度标杆。",caps:["v-container/row/col 网格系统与断点策略","下划线指示器等 Material 微动效（本站 Tabs 借鉴）","主题系统：light/dark + 变量定制"]},
+{r:17,n:"Chakra UI",o:"chakra-ui",repo:"chakra-ui",s:40676,c:"lib",lic:"MIT",doc:"https://chakra-ui.com",cap:"可访问性优先（WAI-ARIA 全覆盖）；style props 令牌化样式",d:"以无障碍为一等公民的 React 组件库。",caps:["focus-visible 环、aria 属性、键盘环游的默认实现","style props：把设计令牌当 props 传","颜色语义化（gray.500 等有限刻度）"]},
+{r:18,n:"Ant Design Pro",o:"ant-design",repo:"ant-design-pro",s:38833,c:"tpl",lic:"MIT",doc:"https://pro.ant.design",cap:"企业中台脚手架；ProTable/ProForm「组件组合优于配置爆炸」思想",d:"Ant Design 官方中后台脚手架，企业级工程化范本。",caps:["ProTable/ProForm：把高频组合封装为高级组件","布局（ProLayout）：菜单/面包屑/页头一体化","国际化、权限、Mock 的工程集成范本"]},
+{r:19,n:"Refine",o:"refinedev",repo:"refine",s:35761,c:"tpl",lic:"MIT",doc:"https://refine.dev",cap:"headless 后台框架：数据契约与 UI 解耦",d:"面向后台应用的 headless 框架， antd/MUI/Chakra 可插拔。",caps:["数据 Provider 契约：CRUD 与 UI 彻底解耦","资源（Resource）抽象：路由/菜单/权限一体","无论头核心+任意 UI 库的适配层设计"]},
+{r:20,n:"Motion",o:"motiondivision",repo:"motion",s:33846,c:"motion",lic:"MIT",doc:"https://motion.dev",cap:"（Framer Motion）spring 物理动效；layout FLIP 动画；编排 stagger",d:"React 动效的事实标准（原 Framer Motion），物理动效与手势的集大成者。",caps:["spring 物理曲线：中断可续、观感自然（本站缓动思想的来源）","layout 属性 FLIP 动画：位置变化自动补间","staggerChildren 编排：序列动效一行声明"]},
+{r:21,n:"Vue Vben Admin",o:"vbenjs",repo:"vue-vben-admin",s:33554,c:"tpl",lic:"MIT",cap:"现代中后台工程范本（Monorepo + 权限 + 多主题）",d:"新一代 Vue3 中后台模板顶流，工程化程度最高。",caps:["Monorepo（pnpm）组织的中后台工程结构","主题/布局/权限的运行时切换架构","组件按需引入与分包策略实践"]},
+{r:22,n:"Lottie Web",o:"airbnb",repo:"lottie-web",s:32145,c:"motion",lic:"MIT",doc:"https://airbnb.io/lottie",cap:"AE 动画直出 Web；复杂品牌动效的落地方案",d:"Airbnb 开源的动画渲染器，设计师动效工程化的桥梁。",caps:["After Effects→Bodymovin→Web 的动效管线","SVG/Canvas 渲染器按场景取舍","品牌级复杂动效的交付契约（JSON 描述动效）"]},
+{r:23,n:"Mantine",o:"mantinedev",repo:"mantine",s:31800,c:"lib",lic:"MIT",doc:"https://mantine.dev",cap:"120+ 组件 + hooks 库；暗色模式与 CSS 变量双轨",d:"组件最全的 React 库之一，质量与 DX 兼顾。",caps:["120+ 组件 + 50+ hooks 的全量覆盖策略","CSS 变量与运行时主题双轨","表单（use-form）与通知等横向能力内置"]},
+{r:24,n:"HeroUI",o:"heroui-inc",repo:"heroui",s:30877,c:"lib",lic:"Apache-2.0",doc:"https://heroui.com",cap:"Tailwind + Framer Motion 的现代组件美学；玻璃拟态",d:"原 NextUI，Tailwind 生态中审美最现代的组件库。",caps:["Tailwind 插件形态的组件分发","Framer Motion 驱动的微交互（进出场/按压反馈）","玻璃拟态与柔和阴影的现代视觉语言"]},
+{r:25,n:"Foundation",o:"foundation",repo:"yeti",s:29799,c:"css",lic:"MIT（仓库 SPDX 为 NOASSERTION）",doc:"https://get.foundation",risk:"已更名（foundation/yeti）且低维护，保留为历史参考位，不建议新项目采用。",cap:"语义化栅格与响应式先驱（已更名低维护，历史参考位）",d:"与 Bootstrap 同时代的响应式框架先驱，语义化栅格与移动优先的贡献者。",caps:["移动优先与语义化栅格的早期范式","无障碍（accessibility mixin）的先行实践","响应式图片与表格策略的历史参考"]},
+{r:26,n:"React Spring",o:"pmndrs",repo:"react-spring",s:29167,c:"motion",lic:"MIT",doc:"https://react-spring.dev",cap:"弹簧物理插值动画，中断可续",d:"基于弹簧物理的 React 动画库，pmndrs 生态成员。",caps:["弹簧物理模型（stiffness/damping），动画可中断可叠加","插值（interpolate）链式映射","与手势库（use-gesture）的天然集成"]},
+{r:27,n:"GSAP",o:"GreenSock",repo:"GSAP",s:28844,c:"motion",lic:"标准许可（仓库未标 SPDX，商用需自查）",doc:"https://gsap.com",risk:"Webflow 所有、标准许可「免费但需注册」；借鉴时间轴与 ScrollTrigger 思想，不引代码。",cap:"时间轴编排动效标杆；ScrollTrigger 滚动叙事",d:"专业级 JavaScript 动画引擎，时间轴编排与滚动叙事的标杆。",caps:["timeline 时间轴编排：动效的乐谱化表达","ScrollTrigger：滚动与动画状态机绑定","性能：批量 transform 与 rAF 调度"]},
+{r:28,n:"Headless UI",o:"tailwindlabs",repo:"headlessui",s:28767,c:"headless",lic:"MIT",doc:"https://headlessui.com",cap:"无样式逻辑组件（Dialog/Menu/Listbox）：行为与样式分离",d:"Tailwind Labs 出品的无样式组件库，行为与样式分离的代表。",caps:["Dialog/Menu/Listbox/Combobox 的完整键盘行为","焦点陷阱与 aria 属性的默认正确","0 样式依赖，任意设计系统可套"]},
+{r:29,n:"AOS",o:"michalsnik",repo:"aos",s:28059,c:"motion",lic:"MIT",doc:"https://michalsnik.github.io/aos/",cap:"滚动触发进场最小方案（data-aos 属性化）",d:"Animate On Scroll——用 HTML 属性声明滚动动效的最小方案。",caps:["data-aos 属性化声明，HTML 即动效配置","IntersectionObserver 检测 + 一次性触发","锚点/延迟/缓动的轻量配置面"]},
+{r:30,n:"Element Plus",o:"element-plus",repo:"element-plus",s:27798,c:"lib",lic:"MIT",doc:"https://element-plus.org",cap:"Vue3 生态 B 端首选；暗色变量与国际化",d:"Element 的 Vue 3 重写，社区共建的 B 端首选。",caps:["Vue3 组合式 API 的组件封装范本","CSS 变量暗色主题方案","大规模国际化（50+ 语言包）实践"]},
+{r:31,n:"Recharts",o:"recharts",repo:"recharts",s:27618,c:"chart",lic:"MIT",doc:"https://recharts.org",cap:"声明式组合式 React 图表 API",d:"以「图表即组件组合」理念重塑 React 图表 API。",caps:["<LineChart><Line/> 的声明式组合 API","SVG 渲染 + React 生命周期天然融合","Tooltip/Legend 等横切组件的可组合性"]},
+{r:32,n:"Quasar",o:"quasarframework",repo:"quasar",s:27207,c:"lib",lic:"MIT",doc:"https://quasar.dev",cap:"一套代码全平台（SPA/PWA/桌面/移动）",d:"Vue 生态的全平台交付框架，一套代码八端输出。",caps:["SPA/PWA/SSR/Electron/移动端统一构建","Material 风格组件全量 + 平台自适应","CLI 工程链：构建目标即配置"]},
+{r:33,n:"React Admin",o:"marmelab",repo:"react-admin",s:26954,c:"tpl",lic:"MIT",doc:"https://marmelab.com/react-admin",cap:"后台 CRUD 组件化（Resource/List/Show 抽象）",d:"marmelab 出品的 React 后台框架，CRUD 抽象的代表作。",caps:["Resource/List/Show/Edit 的 CRUD 原语抽象","数据 Provider 适配 REST/GraphQL","乐观更新与行内编辑等后台交互规范"]},
+{r:34,n:"Feather Icons",o:"feathericons",repo:"feather",s:26011,c:"icon",lic:"MIT",doc:"https://feathericons.com",cap:"24×24 stroke 图标黄金标准（本站图标同规格手绘）",d:"287 枚图标定义了「stroke 线性图标」的黄金规格。",caps:["24×24 网格 + 2px stroke + 圆角端点的规格语言","SVG symbol 复用与 currentColor 继承","极简命名法（图标即词汇）"]},
+{r:35,n:"Simple Icons",o:"simple-icons",repo:"simple-icons",s:25973,c:"icon",lic:"CC0-1.0",doc:"https://simpleicons.org",cap:"3000+ 品牌 SVG 图标，公有领域",d:"全球品牌单色图标的最大集合，CC0 公有领域。",caps:["3000+ 品牌官方路径的单色标准化","CC0 许可：零归属要求","slug 化 API（品牌名即键）"]},
+{r:36,n:"Lucide",o:"lucide-icons",repo:"lucide",s:24878,c:"icon",lic:"ISC（仓库 SPDX 为 NOASSERTION）",doc:"https://lucide.dev",cap:"feather 社区续作，最全 stroke 图标体系",d:"Feather 的社区续作，现在最活跃的线性图标库。",caps:["1500+ 图标延续 feather 规格","多框架官方包（React/Vue/Svelte/Laravel）","可调 stroke-width 的规格弹性"]},
+{r:37,n:"Vant",o:"vant-ui",repo:"vant",s:24385,c:"lib",lic:"MIT",doc:"https://vant-ui.github.io/vant",cap:"移动端电商组件规范（SKU 选择器/地址编辑等业务组件）",d:"有赞出品的移动端组件库，业务组件沉淀最丰富。",caps:["SKU 选择器/地址编辑/优惠券等业务级组件","移动端表单与弹层的触控规范","主题定制与暗色适配"]},
+{r:38,n:"Heroicons",o:"tailwindlabs",repo:"heroicons",s:23857,c:"icon",lic:"MIT",doc:"https://heroicons.com",cap:"Tailwind 官方图标，24/20/16 三刻度",d:"Tailwind CSS 官方图标集，与 Tailwind 设计语言同源。",caps:["24/20/16 三刻度 × outline/solid/solid-mini","与 Tailwind 工具类的天然适配","stroke 宽度与网格的再验证（1.5px 流派）"]},
+{r:39,n:"React Bootstrap",o:"react-bootstrap",repo:"react-bootstrap",s:22602,c:"lib",lic:"MIT",doc:"https://react-bootstrap.github.io",cap:"Bootstrap 组件的 React 重实现",d:"Bootstrap 组件的 React 原生重实现，零 jQuery。",caps:["组件的 React 化封装（受控/非受控双模式）","复用 Bootstrap CSS 的前提下替换行为层","as 多态组件 API 设计"]},
+{r:40,n:"ScrollReveal",o:"jlmakes",repo:"scrollreveal",s:22479,c:"motion",lic:"⚠️ 仓库无 LICENSE 文件",risk:"无 LICENSE = 默认版权保留，不可直接商用。本站以 IntersectionObserver 自实现其思想。",doc:"https://scrollrevealjs.org",cap:"声明式滚动显现；商用前需联系作者确认",d:"曾经的现象级滚动显现库（注意：仓库无 LICENSE 文件）。",caps:["声明式链式 API（reveal().sequence()）","滚动显现的「入场一次性」心智","cleanup 与重放的生命周期设计"]},
+{r:41,n:"Blueprint",o:"palantir",repo:"blueprint",s:22126,c:"lib",lic:"Apache-2.0（仓库 SPDX 为 NOASSERTION）",doc:"https://blueprintjs.com",cap:"数据密集桌面端组件（表格虚拟滚动/日期范围选择）",d:"Palantir 出品，面向数据密集型桌面应用的组件库。",caps:["表格虚拟滚动：十万行流畅渲染","日期范围/时区选择器等复杂控件","密集数据展示的排版规范（紧凑密度）"]},
+{r:42,n:"Tabler Icons",o:"tabler",repo:"tabler-icons",s:21925,c:"icon",lic:"MIT",doc:"https://tabler.io/icons",cap:"5800+ stroke 图标，与 Tabler 后台同一设计语言",d:"数量与质量兼备的开源图标库（注意区分同名的 Tabler 模板）。",caps:["5800+ 图标全部 stroke 规格","与 Tabler 模板同语言的自洽设计","SVG/Webfont/React/Vue 全通道分发"]},
+{r:43,n:"Ant Design Vue",o:"vueComponent",repo:"ant-design-vue",s:21673,c:"lib",lic:"MIT（仓库 SPDX 为 NOASSERTION）",doc:"https://antdv.com",cap:"Ant Design 的 Vue 实现",d:"Ant Design 设计体系的 Vue 实现版（Templafy 发起、社区维护）。",caps:["跨框架复刻设计体系的方法论","AntD API 的 Vue 习惯法映射","复杂组件（Table/Tree）的移植策略"]},
+{r:44,n:"Fluent UI",o:"microsoft",repo:"fluentui",s:20312,c:"lib",lic:"MIT（仓库 SPDX 为 NOASSERTION）",doc:"https://developer.microsoft.com/fluentui",cap:"微软 Fluent 2 React 实现；跨平台令牌体系",d:"微软官方 Fluent 2 的 React 实现，Office/Win11 界面的开源部分。",caps:["Fluent 2 设计语言的 React 组件实现","跨 Web/iOS/Android/Windows 的令牌体系","企业级主题与密度的平台级实践"]},
+{r:45,n:"React Email",o:"resend",repo:"react-email",s:19813,c:"email",lic:"MIT",doc:"https://react.email",cap:"邮件组件化：组件 → 兼容各客户端的 HTML 邮件",d:"把「写邮件」变成「写组件」，Resend 出品。",caps:["组件化生成兼容 Outlook/Gmail 的表格邮件","preview 与 render 的开发体验","邮件模板的版本化与复用"]},
+{r:46,n:"vue-manage-system",o:"lin-xin",repo:"vue-manage-system",s:19613,c:"tpl",lic:"MIT",cap:"轻量中文后台模板，学习成本最低",d:"最轻量的中文 Vue 后台模板之一，单页管理台的标准答案。",caps:["最小可用的后台骨架（登录+菜单+表格表单）","中文场景下的极简工程结构","二次开发友好的组件封装度"]},
+{r:47,n:"Radix Primitives",o:"radix-ui",repo:"primitives",s:19365,c:"headless",lic:"MIT",doc:"https://radix-ui.com",cap:"无头组件事实标准；focus 管理与键盘交互教科书（shadcn 底座）",d:"无头组件的事实标准，shadcn/ui 的行为底座。",caps:["focus 陷阱/回归与 aria 属性的教科书实现","Popover/Dialog/Select 等 30+ 无头原语","键盘交互矩阵（Home/End/Typeahead）"]},
+{r:48,n:"UnoCSS",o:"antfu",repo:"unocss",s:18974,c:"css",lic:"MIT（仓库 SPDX 为 NOASSERTION）",doc:"https://unocss.dev",cap:"按需原子 CSS 引擎；attributify 模式",d:"antfu 的原子 CSS 引擎，Tailwind 之外的高性能选择。",caps:["按需生成：产物只含用到的样式","preset 体系（Tailwind/Wind/Attributify 可组合）","图标方案：任意图标集编译为原子类"]},
+{r:49,n:"Framework7",o:"framework7io",repo:"framework7",s:18762,c:"lib",lic:"MIT",doc:"https://framework7.io",cap:"类原生移动 UI（Swipeout/ActionSheet 手势组件最全）",d:"老牌类原生移动 UI 框架，iOS/MD 手势组件最全。",caps:["Swipeout/ActionSheet/Sheet Modal 的原生手感","移动端路由与页面转场栈","多视图（Views/Tabs）导航模型"]},
+{r:50,n:"Naive UI",o:"tusen-ai",repo:"naive-ui",s:18567,c:"lib",lic:"MIT",doc:"https://naiveui.com",cap:"全量 TypeScript；CSS-in-Vars 主题定制彻底",d:"图森未来系的全量 TS 组件库，主题定制最彻底。",caps:["全量 TypeScript 编写，类型即文档","CSS-in-Vars：运行时主题切换零重建","中文文档与暗色主题的完整适配"]}
+];
+
+/* ==================== 工具 ==================== */
+const $=s=>document.querySelector(s);
+const fmt=n=>n>=10000?(n/10000).toFixed(1).replace(/\.0$/,"")+"万":n.toLocaleString("en-US");
+const gh=r=>"https://github.com/"+r.o+"/"+r.repo;
+const norm=s=>s.toLowerCase().replace(/\s+/g,"");
+function match(q,text){
+  const a=norm(q),b=norm(text);
+  if(!a)return true;
+  if(b.includes(a))return true;
+  if(/[\u4e00-\u9fff]/.test(a)&&a.length>=2){ // 中文 bigram 全命中
+    for(let i=0;i<a.length-1;i++){if(!b.includes(a.slice(i,i+2)))return false}
+    return true;
+  }
+  return false;
+}
+function toast(msg){
+  const t=document.createElement("div");t.className="toast";
+  t.innerHTML='<svg class="ic" viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M20 6L9 17l-5-5"/></svg>'+msg;
+  $("#toasts").appendChild(t);
+  setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.remove(),300)},2200);
+}
+
+/* ==================== 主题（daisyUI 主题对象化思路） ==================== */
+const sunPath='<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>';
+const moonPath='<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>';
+function setTheme(t){
+  document.documentElement.setAttribute("data-theme",t);
+  $("#themeIcon").innerHTML=t==="dark"?sunPath:moonPath;
+  try{localStorage.setItem("catlas-theme",t)}catch(e){}
+}
+setTheme((()=>{try{return localStorage.getItem("catlas-theme")|| (matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){return "light"}})());
+$("#themeBtn").addEventListener("click",()=>{
+  const t=document.documentElement.getAttribute("data-theme")==="dark"?"light":"dark";
+  setTheme(t);toast(t==="dark"?"已切换到暗色主题":"已切换到亮色主题");
+});
+
+/* ==================== 首页渲染 ==================== */
+const total=P.reduce((a,b)=>a+b.s,0);
+$("#heroStats").innerHTML=[
+  ["50","上榜项目"],[total.toLocaleString("en-US"),"合计 Star（快照实测）"],["8","赛道分类"],["100%","许可与归档核验"]
+].map(x=>'<div class="stat reveal"><b>'+x[0]+'</b><span>'+x[1]+'</span></div>').join("");
+$("#totalStars").textContent=total.toLocaleString("en-US");
+
+const catIcon={lib:"box",motion:"zap",tpl:"layout",icon:"star",css:"type",headless:"grid",chart:"chart",email:"mail"};
+const iconPaths={
+box:'<path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+zap:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>',
+layout:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>',
+star:'<path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2z"/>',
+type:'<path d="M4 7V5h16v2M12 5v14M9 19h6"/>',
+grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+chart:'<path d="M3 3v18h18"/><path d="M8 16v-5M13 16V8M18 16v-8"/>',
+mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/>',
+book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+flask:'<path d="M10 2v7L4.5 19a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 9V2"/><path d="M8.5 2h7M7 15h10"/>',
+compass:'<circle cx="12" cy="12" r="10"/><path d="M16.2 7.8l-2.1 6.3-6.3 2.1 2.1-6.3 6.3-2.1z"/>',
+layers:'<path d="M12 2l10 5.5L12 13 2 7.5 12 2z"/><path d="M2 12.5L12 18l10-5.5M2 17.5L12 23l10-5.5"/>',
+command:'<path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0 3-3z"/>',
+sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+};
+const icSvg=(k,sz)=>'<svg class="ic" viewBox="0 0 24 24"'+(sz?' style="width:'+sz+'px;height:'+sz+'px"':'')+'>'+iconPaths[k]+"</svg>";
+
+// 分类卡片
+const byCat={};P.forEach(p=>{(byCat[p.c]=byCat[p.c]||[]).push(p)});
+$("#catCards").innerHTML=Object.keys(CATS).map(k=>{
+  const arr=byCat[k].slice().sort((a,b)=>b.s-a.s),top=arr[0];
+  return '<a class="cat-card c-'+k+' reveal" href="#/list?c='+k+'"><div class="cc-top">'+icSvg(catIcon[k],17)+'<b>'+CATS[k].label+'</b><span class="cc-n">'+arr.length+' 项</span></div><div class="cc-cap">#'+top.r+" "+top.n+"</div><div class=\"cc-stars\">"+fmt(top.s)+" Star · 榜首</div></a>";
+}).join("");
+
+// 能力调用地图
+const MAP=[
+["layers","Token 层","语义 CSS 变量 + 4px 刻度 + 双主题令牌，暗色模式只换变量值。",["#2 shadcn/ui","#5 tailwindcss","#14 daisyUI"]],
+["box","组件层","按钮变体、elevation 卡片、密度表格、命令面板等 10 组实物，见组件工坊。",["#1 Bootstrap","#4 MUI","#3 Ant Design","#47 Radix"]],
+["layout","布局与 IA","管理台三段式（筛选条→表格→说明）与中后台列表页分型。",["#6 vue-element-admin","#13 AdminLTE","#15 tabler"]],
+["zap","动效纪律","只留进场 fade-up / hover 抬升 / 指示器位移三类；200–350ms 统一缓动。",["#29 AOS","#20 motion"]],
+["star","图标策略","24 网格 + 2px stroke + 圆角端点，12 枚内联 SVG 手绘，零依赖。",["#34 feather","#36 lucide"]],
+["chart","图表策略","首页仅用纯 CSS 条形表达分类占比，坚守数据墨水比，不引图表库。",["#8 Chart.js","#9 ECharts"]]
+];
+$("#mapGrid").innerHTML=MAP.map(m=>'<div class="map-card reveal"><h3>'+icSvg(m[0],17)+m[1]+'</h3><p>'+m[2]+'</p><div class="src-tags">'+m[3].map(t=>'<span class="src-tag c-lib" style="--cat:var(--primary)">'+t+"</span>").join("")+"</div></div>").join("");
+
+/* ==================== 榜单 ==================== */
+const state={cat:"all",q:"",sort:"stars"};
+function renderChips(){
+  const counts={};P.forEach(p=>counts[p.c]=(counts[p.c]||0)+1);
+  const all='<button class="chip'+(state.cat==="all"?" on":"")+'" data-cat="all">全部 <span class="cnt">50</span></button>';
+  $("#chips").innerHTML=all+Object.keys(CATS).map(k=>'<button class="chip c-'+k+(state.cat===k?" on":"")+'" data-cat="'+k+'">'+CATS[k].label+' <span class="cnt">'+(counts[k]||0)+'</span></button>').join("");
+  $("#chips").querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{state.cat=b.dataset.cat;syncUrl();renderChips();renderTable()}));
+}
+function renderTable(){
+  let arr=P.filter(p=>(state.cat==="all"||p.c===state.cat)&&(!state.q||match(state.q,[p.n,p.o+"/"+p.repo,p.cap,p.d,CATS[p.c].label].join(" "))));
+  if(state.sort==="name")arr=arr.slice().sort((a,b)=>a.n.localeCompare(b.n));else arr=arr.slice().sort((a,b)=>b.s-a.s);
+  $("#cnt").textContent="显示 "+arr.length+" / 50 项";
+  $("#empty").hidden=arr.length>0;
+  $("#tbody").innerHTML=arr.map(p=>'<tr data-r="'+p.r+'" tabindex="0"><td class="rk rk-cell" data-l="#">'+p.r+'</td><td class="pj-cell" data-l="项目"><b>'+p.n+'</b><span class="repo">'+p.o+"/"+p.repo+'</span></td><td data-l="分类"><span class="pill c-'+p.c+'">'+CATS[p.c].label+'</span></td><td class="stars-cell" data-l="Star"><svg class="ic" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg> '+p.s.toLocaleString("en-US")+'</td><td class="lic-cell'+(p.lic.indexOf("⚠")===0?" warn":"")+'" data-l="许可">'+p.lic+'</td><td class="cap-cell" data-l="可借鉴能力">'+p.cap+"</td></tr>").join("");
+  $("#tbody").querySelectorAll("tr").forEach(tr=>{
+    const open=()=>openDrawer(+tr.dataset.r);
+    tr.addEventListener("click",open);
+    tr.addEventListener("keydown",e=>{if(e.key==="Enter")open()});
+  });
+}
+function syncUrl(){
+  const params=new URLSearchParams();
+  if(state.cat!=="all")params.set("c",state.cat);
+  if(state.q)params.set("q",state.q);
+  if(state.sort!=="stars")params.set("s",state.sort);
+  const qs=params.toString(),target="#/list"+(qs?"?"+qs:"");
+  if(location.hash!==target)history.replaceState(null,"",target);
+}
+$("#q").addEventListener("input",e=>{state.q=e.target.value.trim();syncUrl();renderTable()});
+$("#sortSel").addEventListener("change",e=>{state.sort=e.target.value;syncUrl();renderTable()});
+
+/* ==================== 抽屉 ==================== */
+function openDrawer(r){
+  const p=P.find(x=>x.r===r);if(!p)return;
+  $("#dwName").textContent=p.n;
+  $("#dwRepo").textContent=p.o+"/"+p.repo;
+  $("#dwBody").innerHTML=
+    '<div class="dw-row"><span class="pill c-'+p.c+'">'+CATS[p.c].label+'</span><span class="pill c-lib" style="--cat:var(--muted)">#'+p.r+' / 50</span><button class="dw-stars" id="copyStars" title="点击复制">'+ '<svg class="ic" viewBox="0 0 24 24"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1L12 2z"/></svg>'+p.s.toLocaleString("en-US")+'</button></div>'
+    +'<div class="dw-sec">简介</div><p class="dw-desc">'+p.d+"</p>"
+    +'<div class="dw-sec">能力拆解（可借鉴点）</div><ul class="dw-caps">'+p.caps.map(c=>"<li>"+c+"</li>").join("")+"</ul>"
+    +(p.risk?'<div class="dw-risk"><b>风险标注</b> · '+p.risk+"</div>":"")
+    +'<div class="dw-links"><a class="btn btn-p sm" href="'+gh(p)+'" target="_blank" rel="noopener">GitHub 仓库</a>'+(p.doc?'<a class="btn btn-o sm" href="'+p.doc+'" target="_blank" rel="noopener">官方文档</a>':"")+'<button class="btn btn-g sm" id="palHint">⌘K 全局搜索</button></div>';
+  $("#overlay").hidden=false;requestAnimationFrame(()=>$("#overlay").classList.add("open"));
+  $("#drawer").hidden=false;requestAnimationFrame(()=>$("#drawer").classList.add("open"));
+  document.body.style.overflow="hidden";
+  $("#copyStars").addEventListener("click",()=>{
+    const v=p.o+"/"+p.repo+" · "+p.s.toLocaleString("en-US")+" stars (snapshot 2026-10)";
+    (navigator.clipboard?navigator.clipboard.writeText(v):Promise.reject()).then(()=>toast("已复制 "+p.n+" 数据")).catch(()=>toast("复制失败，请手动选择"));
+  });
+  const hint=$("#palHint");if(hint)hint.addEventListener("click",closeDrawerAndOpenPal);
+}
+function closeDrawer(){
+  $("#overlay").classList.remove("open");$("#drawer").classList.remove("open");
+  setTimeout(()=>{$("#overlay").hidden=true;$("#drawer").hidden=true},260);
+  document.body.style.overflow="";
+}
+function closeDrawerAndOpenPal(){closeDrawer();setTimeout(openPal,280)}
+$("#dwClose").addEventListener("click",closeDrawer);
+$("#overlay").addEventListener("click",closeDrawer);
+
+/* ==================== 命令面板 ==================== */
+let palSel=0,palItems=[];
+function buildPalItems(q){
+  const pages=[
+    {g:"页面",ic:"layers",label:"首页 · 力量地图总览",sub:"#/",run:()=>{location.hash="#/"}},
+    {g:"页面",ic:"chart",label:"Top 50 榜单",sub:"#/list",run:()=>{location.hash="#/list"}},
+    {g:"页面",ic:"book",label:"PRD · 能力调用映射",sub:"#/prd",run:()=>{location.hash="#/prd"}},
+    {g:"页面",ic:"flask",label:"组件工坊 · 10 组实物",sub:"#/lab",run:()=>{location.hash="#/lab"}},
+    {g:"页面",ic:"compass",label:"方法论 · 口径与复现",sub:"#/method",run:()=>{location.hash="#/method"}},
+    {g:"操作",ic:"sun",label:"切换亮 / 暗主题",sub:"theme",run:()=>{$("#themeBtn").click()}}
+  ].filter(x=>!q||match(q,x.label));
+  const proj=P.filter(p=>!q||match(q,p.n+" "+p.o+"/"+p.repo+" "+p.cap+" "+CATS[p.c].label))
+    .slice(0,12)
+    .map(p=>({g:"项目",ic:"box",label:p.n,sub:"#"+p.r+" · "+fmt(p.s),run:()=>{location.hash="#/list";setTimeout(()=>openDrawer(p.r),60)}}));
+  return pages.concat(proj);
+}
+function renderPal(){
+  palItems=buildPalItems($("#palInput").value.trim());
+  palSel=Math.min(palSel,Math.max(0,palItems.length-1));
+  let html="",lastG="";
+  palItems.forEach((it,i)=>{
+    if(it.g!==lastG){html+='<div class="pal-group">'+it.g+"</div>";lastG=it.g}
+    html+='<button class="pal-item'+(i===palSel?" sel":"")+'" data-i="'+i+'">'+icSvg(it.ic,15)+'<span>'+it.label+'</span><span class="pi-sub">'+it.sub+"</span></button>";
+  });
+  $("#palList").innerHTML=html||'<div class="pal-group">无结果</div>';
+  $("#palList").querySelectorAll(".pal-item").forEach(b=>b.addEventListener("click",()=>{palItems[+b.dataset.i].run();closePal()}));
+  const selEl=$("#palList").querySelector(".pal-item.sel");if(selEl)selEl.scrollIntoView({block:"nearest"});
+}
+function openPal(){$("#palWrap").classList.add("open");$("#palInput").value="";palSel=0;renderPal();setTimeout(()=>$("#palInput").focus(),20);document.body.style.overflow="hidden"}
+function closePal(){$("#palWrap").classList.remove("open");document.body.style.overflow=""}
+$("#openPal").addEventListener("click",openPal);
+$("#palClose").addEventListener("click",closePal);
+$("#palOverlay").addEventListener("click",closePal);
+$("#palInput").addEventListener("input",()=>{palSel=0;renderPal()});
+document.addEventListener("keydown",e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#palWrap").classList.contains("open")?closePal():openPal();return}
+  if(e.key==="Escape"){if($("#palWrap").classList.contains("open"))closePal();else if($("#drawer").classList.contains("open"))closeDrawer();return}
+  if(!$("#palWrap").classList.contains("open"))return;
+  if(e.key==="ArrowDown"){e.preventDefault();palSel=Math.min(palSel+1,palItems.length-1);renderPal()}
+  if(e.key==="ArrowUp"){e.preventDefault();palSel=Math.max(palSel-1,0);renderPal()}
+  if(e.key==="Enter"&&palItems[palSel]){e.preventDefault();palItems[palSel].run();closePal()}
+});
+
+/* ==================== PRD 页 ==================== */
+const PRD_TOC=[
+["背景与问题","prd-bj"],["产品定位","prd-dw"],["目标用户与场景","prd-yh"],["信息架构","prd-ia"],
+["功能需求","prd-fn"],["能力调用映射","prd-map"],["技术方案","prd-js"],["非功能需求","prd-nf"],
+["QA 验收门禁","prd-qa"],["里程碑与风险","prd-ms"]];
+$("#prdToc").innerHTML=PRD_TOC.map(t=>'<a href="#page-prd" data-anchor="'+t[1]+'">'+t[0]+"</a>").join("");
+$("#prdToc").querySelectorAll("a").forEach(a=>a.addEventListener("click",e=>{
+  e.preventDefault();const el=document.getElementById(a.dataset.anchor);
+  if(el)el.scrollIntoView({block:"start"});
+}));
+$("#prdBody").innerHTML=`
+<h1>CompAtlas 组件星图 · PRD V1.0</h1>
+<p class="prd-meta">2026-10-07 · 纯静态单文件站 · 数据上游：《TOP50-榜单.md》（GitHub API 快照 2026-10-06/07）</p>
+
+<h2 id="prd-bj">1 · 背景与问题</h2>
+<p>开源设计组件/模板生态已是 Web 界最大的免费设计资产库：本次实测 Top 50 合计约 <b>214 万 Star</b>。但存在三个断层：</p>
+<ol>
+<li><b>选型断层</b>——项目分散在组件库、模板、图标、动效、图表等赛道，没有一张按真实 Star 排序、口径统一的地图。</li>
+<li><b>能力断层</b>——导航站只给链接，不讲「这个项目的能力是什么、能被怎么借用」。Star 是人气不是能力。</li>
+<li><b>验证断层</b>——讲了能力也少有现场证明。「调用」应是把 Token 体系、组件模式、交互规范真正用到自己的产品里。</li>
+</ol>
+
+<h2 id="prd-dw">2 · 产品定位</h2>
+<blockquote><b>一句话</b>：一张按实测 Star 排序的开源组件/模板力量地图，每个项目拆解出「可借鉴能力」，并整站示范这些能力的真实调用。</blockquote>
+<ul>
+<li><b>不是</b>又一个 awesome 清单（有实测星数、许可核验、排除记录）。</li>
+<li><b>不是</b>组件市场（不提供下载分发，只做决策与示范）。</li>
+<li><b>是</b>「榜单（看清）→ 拆解（看懂）→ 工坊（上手）」三段式决策站。</li>
+</ul>
+
+<h2 id="prd-yh">3 · 目标用户与场景</h2>
+<table class="tbl-p"><thead><tr><th>用户</th><th>场景</th><th>站内动线</th></tr></thead><tbody>
+<tr><td>前端开发者</td><td>新项目选组件库/模板</td><td>首页 → 榜单筛选 → 抽屉看能力 → 跳 GitHub</td></tr>
+<tr><td>UI/UX 设计师</td><td>找设计语言参考、建规范</td><td>榜单 → 能力拆解 → 组件工坊看模式实物</td></tr>
+<tr><td>独立开发者 / 复制粘贴建站人群</td><td>快速组装站点</td><td>组件工坊 → PRD → 复用模式</td></tr>
+<tr><td>技术管理者 / 教学</td><td>生态全景、布道素材</td><td>首页总览 + 方法论</td></tr>
+</tbody></table>
+
+<h2 id="prd-ia">4 · 信息架构（5 页，hash 路由）</h2>
+<pre class="mono">#/          首页    总览：Hero 统计、8 大类导览、能力调用地图
+#/list      榜单    50 行主表：筛选/排序/搜索/抽屉/命令面板
+#/prd       PRD     本文档全文渲染
+#/lab       组件工坊 10 组组件实物，每组标注「模式来源」
+#/method    方法论  入选口径、排除记录、复现命令、局限性</pre>
+
+<h2 id="prd-fn">5 · 功能需求</h2>
+<h3>P0（缺失即不成立）</h3>
+<table class="tbl-p"><thead><tr><th>ID</th><th>需求</th><th>验收</th></tr></thead><tbody>
+<tr><td class="tagp0">F1</td><td>榜单主表 50 行：排名/名称/分类/Star/许可/能力</td><td>与《TOP50-榜单.md》逐条一致，总数 2,135,844 对账</td></tr>
+<tr><td class="tagp0">F2</td><td>分类筛选 8 类 chips + 计数徽标</td><td>单选，行数实时变化</td></tr>
+<tr><td class="tagp0">F3</td><td>排序：Star 降序（默认）/ 名称</td><td>切换后重排</td></tr>
+<tr><td class="tagp0">F4</td><td>搜索：名称/能力中文匹配（bigram）</td><td>「后台」「图标」「无头」可命中</td></tr>
+<tr><td class="tagp0">F5</td><td>行点击抽屉：简介+能力 3 条+风险+外链</td><td>Esc/遮罩可关</td></tr>
+<tr><td class="tagp0">F6</td><td>命令面板 ⌘K：项目搜索+页面跳转+主题切换</td><td>键盘 ↑↓/Enter/Esc 完整</td></tr>
+<tr><td class="tagp0">F7</td><td>暗/亮主题 + 持久化</td><td>刷新保持；对比度达标</td></tr>
+<tr><td class="tagp0">F8</td><td>PRD 与方法论全文渲染 + 目录锚点</td><td>本页即是 F8 的验收现场</td></tr>
+<tr><td class="tagp0">F9</td><td>组件工坊 10 组 demo</td><td>每组可见「模式来源」徽标，交互真实</td></tr>
+</tbody></table>
+<h3>P1（显著加分）</h3>
+<table class="tbl-p"><thead><tr><th>ID</th><th>需求</th></tr></thead><tbody>
+<tr><td class="tagp1">F10</td><td>深链：筛选状态写入 URL（#/list?c=motion）</td></tr>
+<tr><td class="tagp1">F11</td><td>375px 无横向滚动（表格降级为卡片）</td></tr>
+<tr><td class="tagp1">F12</td><td>滚动进场动效（IntersectionObserver 自实现，一次触发）</td></tr>
+<tr><td class="tagp1">F13</td><td>Toast 轻提示（主题切换/复制反馈）</td></tr>
+<tr><td class="tagp1">F14</td><td>控制台零报错 + window.__qa 自检钩子</td></tr>
+</tbody></table>
+<h3>P2（明确不做 / 划界）</h3>
+<ul><li>实时星数拉取（快照制+日期标注，保零依赖可离线）</li><li>收藏/云同步、评论、登录</li><li>npm 安装命令生成器（M2 再议）</li><li>不引任何运行时 CDN（国内网络可靠性优先）</li></ul>
+
+<h2 id="prd-map">6 · 设计语言决策 —— 能力调用映射表（本 PRD 核心）</h2>
+<p>本站不安装任何一个上榜项目，而是<b>提取其体系级能力</b>用于设计决策：</p>
+<h3>6.1 Token 层</h3>
+<table class="tbl-p"><thead><tr><th>决策</th><th>调用来源</th><th>说明</th></tr></thead><tbody>
+<tr><td>CSS 变量语义化 --bg/--fg/--card/--muted/--primary/--ring</td><td>#2 shadcn/ui</td><td>语义命名而非颜色命名，暗色只换变量值</td></tr>
+<tr><td>4px 基距 + 字号刻度（12–44）</td><td>#5 tailwindcss</td><td>刻度约束防「随手写 17px」</td></tr>
+<tr><td>主题对象化：light/dark 两套完整令牌</td><td>#14 daisyUI</td><td>data-theme 切换 + localStorage 持久化</td></tr>
+<tr><td>圆角三档 --r-s/m/l</td><td>#4 MUI</td><td>参照 shape system 收敛为三档</td></tr>
+</tbody></table>
+<h3>6.2 组件层（工坊 demo 一一对应）</h3>
+<table class="tbl-p"><thead><tr><th>组件</th><th>模式来源</th><th>具体调用的能力</th></tr></thead><tbody>
+<tr><td>Button 语义变体组</td><td>#1 Bootstrap × #2 shadcn/ui</td><td>.btn 变体 API + CVA「意图×尺寸」正交</td></tr>
+<tr><td>卡片 elevation 三档</td><td>#4 MUI</td><td>只取 0/2/8 三档防阴影通胀</td></tr>
+<tr><td>数据表格（密度/hover/表头底色）</td><td>#3 Ant Design</td><td>B 端表格密度规范</td></tr>
+<tr><td>Stat 统计卡（数值大字+趋势色）</td><td>#15 tabler</td><td>仪表盘卡片化排版</td></tr>
+<tr><td>Tabs 下划线滑动指示器</td><td>#16 vuetify</td><td>Material 指示器动效的 CSS 近似</td></tr>
+<tr><td>Toast 堆叠通知</td><td>#24 HeroUI 思路</td><td>顶部堆叠+自动消失</td></tr>
+<tr><td>命令面板</td><td>#47 Radix × #2 shadcn/ui</td><td>focus 管理、键盘环游、Esc 分层关闭</td></tr>
+<tr><td>图标组（stroke 2、24 网格、圆角端点）</td><td>#34 feather × #36 lucide</td><td>同规格手绘 12 枚内联 SVG，零依赖</td></tr>
+<tr><td>滚动进场（fade-up 一次触发）</td><td>#29 AOS</td><td>data-anim 属性化声明，IO 实现</td></tr>
+<tr><td>Tag/Chip 过滤器</td><td>#30 element-plus × #37 vant</td><td>选中态令牌反色</td></tr>
+</tbody></table>
+<h3>6.3 布局与信息架构层</h3>
+<ul>
+<li>管理台式导航层级（顶导航+全宽分区变体）——<b>#13 AdminLTE / #15 tabler</b></li>
+<li>中后台「列表页三段式」（筛选条 → 表格 → 分页说明）——<b>#6 vue-element-admin / #18 ant-design-pro</b></li>
+<li>「文档即产品」：PRD/方法论站内全文可读、锚点目录——<b>#10 element</b></li>
+</ul>
+<h3>6.4 动效纪律（防炫技门禁）</h3>
+<p>只保留三类动效：进场 fade-up（#29 AOS）、hover 微抬升（#4 MUI）、指示器位移（#16 vuetify）。<b>禁用</b>视差/粒子/路径动画/无限循环光效。时长 200–350ms，缓动 <code>cubic-bezier(.2,.7,.3,1)</code>（spring 观感的 CSS 近似，思想源自 #20 motion）。</p>
+<h3>6.5 图标与图表策略</h3>
+<p>图标：lucide/feather 规格手绘内联 SVG，不引字体不引 CDN。图表：首页仅用纯 CSS 条形表达「分类星数占比」，致敬 #8 Chart.js / #9 ECharts 的数据墨水比原则。</p>
+
+<h2 id="prd-js">7 · 技术方案</h2>
+<ul>
+<li>单文件 index.html：数据内嵌 JS 数组（50 条 schema：rank/name/owner/repo/stars/category/license/capability/risk/docs）。</li>
+<li>hash 路由 + hashchange 监听，路由函数幂等（防 goto 竞态）。</li>
+<li>搜索：小写化 + 去空格包含 + 中文 bigram 全命中。</li>
+<li>主题：data-theme 属性 + CSS 变量整体切换。</li>
+<li>零外部请求：字体系统栈、图标内联 SVG、图表纯 CSS。</li>
+</ul>
+
+<h2 id="prd-nf">8 · 非功能需求</h2>
+<table class="tbl-p"><thead><tr><th>维度</th><th>标准</th></tr></thead><tbody>
+<tr><td>性能</td><td>单文件 &lt; 350KB；首屏无布局抖动</td></tr>
+<tr><td>兼容</td><td>Chrome/Edge/Safari 现代版；375–1920px</td></tr>
+<tr><td>可访问性</td><td>正文对比度 ≥ 4.5:1；全键盘可达；aria-label 覆盖交互控件</td></tr>
+<tr><td>可信</td><td>所有数字带快照日期；许可风险在站内可见</td></tr>
+<tr><td>可复现</td><td>方法论页给出采集命令与排除记录</td></tr>
+</tbody></table>
+
+<h2 id="prd-qa">9 · QA 验收门禁</h2>
+<ol>
+<li>控制台零错误、零未捕获 Promise。</li>
+<li>375 / 768 / 1440 三档无横向溢出。</li>
+<li>F1–F14 逐条断言（Playwright）。</li>
+<li>站内 50 行数据与《TOP50-榜单.md》对账（首/中/尾抽样）。</li>
+<li>外链全部 target=_blank rel=noopener。</li>
+</ol>
+
+<h2 id="prd-ms">10 · 里程碑与风险</h2>
+<table class="tbl-p"><thead><tr><th>里程碑</th><th>内容</th></tr></thead><tbody>
+<tr><td><b>M1（本次）</b></td><td>榜单实测 + PRD + 单文件站 + Playwright 验收 + 部署</td></tr>
+<tr><td>M2（候选）</td><td>遗珠 51–60 入库、npm 命令生成器、按许可筛选</td></tr>
+<tr><td>M3（候选）</td><td>与《设计系统 TOP50》双榜联动页</td></tr>
+</tbody></table>
+<p><b>风险与对策</b>：星数时效（快照+日期标注）；许可灰区（animate.css / scrollreveal / GSAP 只借鉴不引码）；单文件膨胀（超 350KB 再拆 JSON）。</p>`;
+
+/* ==================== 组件工坊 ==================== */
+$("#labGrid").innerHTML=`
+<div class="lab-card c-lib reveal">
+  <div class="lab-head"><b>Button 语义变体组</b><span class="lab-src">模式来源 #1 Bootstrap × #2 shadcn/ui</span></div>
+  <div class="lab-demo">
+    <button class="btn btn-p">主要操作</button><button class="btn btn-s">次级</button><button class="btn btn-o">外框</button><button class="btn btn-g">幽灵</button><button class="btn btn-d">危险</button>
+    <button class="btn btn-p sm">小号</button><button class="btn btn-p lg">大号</button><button class="btn btn-p" disabled>禁用</button>
+  </div>
+  <div class="lab-note">.btn 变体 API（意图 × 尺寸正交），一套 class 表达全部状态——Bootstrap 的 API 设计 + shadcn 的 CVA 思想。</div>
+</div>
+<div class="lab-card c-tpl reveal">
+  <div class="lab-head"><b>Tag / Chip 选中态</b><span class="lab-src">模式来源 #30 element-plus × #37 vant</span></div>
+  <div class="lab-demo"><div class="chips" id="tagDemo">
+    <button class="chip c-lib on">组件库</button><button class="chip c-motion">动效</button><button class="chip c-tpl">模板</button><button class="chip c-icon">图标</button>
+  </div></div>
+  <div class="lab-note">点击切换选中——选中态用令牌反色（本站榜单筛选条同款组件）。</div>
+</div>
+<div class="lab-card c-lib reveal">
+  <div class="lab-head"><b>卡片 Elevation 三档</b><span class="lab-src">模式来源 #4 Material UI</span></div>
+  <div class="lab-demo"><div class="ele-cards">
+    <div class="ele-card ele0"><b>Elevation 0</b>平面 / 描边</div>
+    <div class="ele-card ele2"><b>Elevation 2</b>悬浮卡片</div>
+    <div class="ele-card ele8"><b>Elevation 8</b>弹层（hover 抬升试试）</div>
+  </div></div>
+  <div class="lab-note">MUI elevation 体系只取 0/2/8 三档——阴影层级收敛，防「阴影通胀」。</div>
+</div>
+<div class="lab-card c-tpl reveal">
+  <div class="lab-head"><b>Stat 统计卡</b><span class="lab-src">模式来源 #15 tabler</span></div>
+  <div class="lab-demo"><div class="stat-cards">
+    <div class="statc"><div class="lab">上榜项目</div><div class="val">50</div><div class="trend up">8 大类全覆盖</div></div>
+    <div class="statc"><div class="lab">合计 Star</div><div class="val">213.6万</div><div class="trend up">快照实测</div></div>
+    <div class="statc"><div class="lab">榜首项目</div><div class="val">17.5万</div><div class="trend down">Bootstrap 单项</div></div>
+  </div></div>
+  <div class="lab-note">「标签小字 + 数值大字 + 趋势色」的信息层级——tabler 仪表盘卡片的排版规范。</div>
+</div>
+<div class="lab-card c-lib reveal">
+  <div class="lab-head"><b>数据表格（密度规范）</b><span class="lab-src">模式来源 #3 Ant Design</span></div>
+  <div class="lab-demo col"><table class="mini">
+    <thead><tr><th>#</th><th>项目</th><th>Star</th><th>分类</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Bootstrap</td><td>174,987</td><td>组件库</td></tr>
+      <tr><td>2</td><td>shadcn/ui</td><td>125,209</td><td>组件库</td></tr>
+      <tr><td>3</td><td>Ant Design</td><td>99,693</td><td>组件库</td></tr>
+      <tr><td>4</td><td>Material UI</td><td>99,134</td><td>组件库</td></tr>
+    </tbody>
+  </table></div>
+  <div class="lab-note">表头底色 + 紧凑密度 + hover 行高亮——Ant Design 的 B 端表格密度规范。</div>
+</div>
+<div class="lab-card c-lib reveal">
+  <div class="lab-head"><b>Tabs 下划线滑动指示器</b><span class="lab-src">模式来源 #16 vuetify</span></div>
+  <div class="lab-demo col"><div class="tabs-demo">
+    <div class="tabs-bar" id="tabsBar">
+      <button class="tbtn on">总览</button><button class="tbtn">榜单</button><button class="tbtn">工坊</button>
+      <span class="tab-ind" id="tabInd"></span>
+    </div>
+    <div class="tab-panel" id="tabPanel">指示器以 transform 位移补间——Material 指示器动效的纯 CSS/JS 近似。</div>
+  </div></div>
+  <div class="lab-note">点击切换：指示器位置用 left/width 过渡（200–250ms），动效纪律内的「指示器位移」类别。</div>
+</div>
+<div class="lab-card c-email reveal">
+  <div class="lab-head"><b>Toast 堆叠通知</b><span class="lab-src">模式来源 #24 HeroUI 反馈层思路</span></div>
+  <div class="lab-demo">
+    <button class="btn btn-p sm" id="toastOk">成功 Toast</button>
+    <button class="btn btn-o sm" id="toastInfo">中性 Toast</button>
+    <button class="btn btn-g sm" id="toastBurst">连发 3 条看堆叠</button>
+  </div>
+  <div class="lab-note">顶部居中堆叠 + 自动消失（2.2s）——反馈不打断主流程。本站全站操作反馈均走此通道。</div>
+</div>
+<div class="lab-card c-headless reveal">
+  <div class="lab-head"><b>命令面板（⌘K）</b><span class="lab-src">模式来源 #47 Radix × #2 shadcn/ui</span></div>
+  <div class="lab-demo">
+    <button class="btn btn-p sm" id="labPal">打开命令面板</button>
+    <span style="font-size:12.5px;color:var(--muted)">或按 <kbd class="mono" style="border:1px solid var(--border);border-radius:4px;padding:1px 6px">⌘K</kbd> / <kbd class="mono" style="border:1px solid var(--border);border-radius:4px;padding:1px 6px">Ctrl K</kbd></span>
+  </div>
+  <div class="lab-note">focus 管理 + 键盘环游（↑↓/Enter/Esc）+ Esc 分层关闭（面板→抽屉）——Radix 的行为规范。</div>
+</div>
+<div class="lab-card c-icon reveal">
+  <div class="lab-head"><b>图标组（stroke 规格）</b><span class="lab-src">模式来源 #34 feather × #36 lucide</span></div>
+  <div class="lab-demo"><div class="icon-grid" id="iconGrid"></div></div>
+  <div class="lab-note">24×24 网格 + 2px stroke + 圆角端点，12 枚内联 SVG 手绘——feather/lucide 的规格语言，零字体零 CDN。</div>
+</div>
+<div class="lab-card c-motion reveal">
+  <div class="lab-head"><b>滚动进场（fade-up）</b><span class="lab-src">模式来源 #29 AOS</span></div>
+  <div class="lab-demo"><div class="sr-set">
+    <div class="sr-box" data-anim>滚动到这里<br>→ 触发进场</div>
+    <div class="sr-box" data-anim data-anim-delay="1">延迟 1 档</div>
+    <div class="sr-box" data-anim data-anim-delay="2">延迟 2 档</div>
+  </div></div>
+  <div class="lab-note">IntersectionObserver 一次性触发，data-anim-delay 声明延迟档位——AOS 的属性化声明思想。</div>
+</div>`;
+
+// 工坊交互
+$("#tagDemo").querySelectorAll(".chip").forEach(c=>c.addEventListener("click",()=>c.classList.toggle("on")));
+$("#toastOk").addEventListener("click",()=>toast("操作成功"));
+$("#toastInfo").addEventListener("click",()=>toast("这是一条中性提示"));
+$("#toastBurst").addEventListener("click",()=>{toast("第 1 条");setTimeout(()=>toast("第 2 条"),160);setTimeout(()=>toast("第 3 条"),320)});
+$("#labPal").addEventListener("click",openPal);
+$("#iconGrid").innerHTML=["box","zap","layout","star","type","grid","chart","mail","book","flask","compass","sun"].map(k=>'<div class="icon-cell">'+icSvg(k,20)+k+"</div>").join("");
+// Tabs
+(function(){
+  const bar=$("#tabsBar"),ind=$("#tabInd"),panel=$("#tabPanel");
+  const texts=["指示器以位移补间切换——Material 指示器动效的纯 CSS/JS 近似。","榜单视图：50 行数据表 + 筛选/排序/搜索。","工坊视图：10 组组件实物，标注模式来源。"];
+  const btns=[...bar.querySelectorAll(".tbtn")];
+  function move(i){
+    btns.forEach((b,j)=>b.classList.toggle("on",i===j));
+    ind.style.left=btns[i].offsetLeft+"px";ind.style.width=btns[i].offsetWidth+"px";
+    panel.textContent=texts[i];
+  }
+  btns.forEach((b,i)=>b.addEventListener("click",()=>move(i)));
+  setTimeout(()=>move(0),50);
+})();
+
+/* ==================== 滚动进场（AOS 思想自实现） ==================== */
+const io=new IntersectionObserver(es=>es.forEach(e=>{
+  if(e.isIntersecting){
+    const d=+((e.target.dataset.animDelay)||0);
+    e.target.style.transitionDelay=(d*90)+"ms";
+    e.target.classList.add("in");
+    io.unobserve(e.target);
+  }
+}),{threshold:.12});
+function observeAnims(){document.querySelectorAll(".reveal:not(.in),[data-anim]:not(.in)").forEach(el=>io.observe(el))}
+
+/* ==================== 路由 ==================== */
+function route(){
+  const h=location.hash||"#/";
+  const [path,qs]=h.replace(/^#\/?/,"").split("?");
+  const name=(path||"home").split("/")[0]||"home";
+  const page=["home","list","prd","lab","method"].includes(name)?name:"home";
+  document.querySelectorAll(".page").forEach(s=>s.classList.remove("on"));
+  const el=$("#page-"+page);if(el)el.classList.add("on");
+  document.querySelectorAll("#navLinks a").forEach(a=>a.classList.toggle("on",a.dataset.nav===page));
+  closeDrawer();closePal();
+  if(page==="list"){
+    const params=new URLSearchParams(qs||"");
+    state.cat=params.get("c")||"all";
+    state.q=params.get("q")||"";
+    state.sort=params.get("s")||"stars";
+    if(!CATS[state.cat]&&state.cat!=="all")state.cat="all";
+    $("#q").value=state.q;$("#sortSel").value=state.sort;
+    renderChips();renderTable();
+  }
+  if(page==="method"||page==="prd")observeAnims();
+  window.scrollTo(0,0);
+  return page;
+}
+window.addEventListener("hashchange",route);
+
+/* ==================== QA 钩子 ==================== */
+window.__qa={
+  errors:[],
+  total:total,
+  count:P.length,
+  rankCheck:P.every((p,i)=>p.r===i+1),
+  categories:Object.keys(CATS).length,
+  get page(){return document.querySelector(".page.on")?.id||null}
+};
+window.addEventListener("error",e=>window.__qa.errors.push(String(e.message)));
+window.addEventListener("unhandledrejection",e=>window.__qa.errors.push("rejection:"+String(e.reason)));
+
+/* init */
+observeAnims();
+route();
+</script>
+</body>
+</html>
